@@ -27,7 +27,7 @@ type memberTypeInfo []binaryTypeEnumeration
 func (r *reader) ReadMemberTypeInfo(l uint32) memberTypeInfo {
 	m := make(memberTypeInfo, l)
 	for n := range m {
-		m[n] = r.ReadByte()
+		m[n] = r.ReadBinaryTypeEnumeration()
 	}
 	return m
 }

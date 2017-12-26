@@ -13,6 +13,10 @@ const (
 	binaryTypePrimitiveArray
 )
 
+func (r *reader) ReadBinaryTypeEnumeration() binaryTypeEnumeration {
+	return binaryTypeEnumeration(r.ReadByte())
+}
+
 type binaryArrayTypeEnumeration byte
 
 const (
@@ -23,3 +27,7 @@ const (
 	binaryArrayTypeJaggedOffset
 	binaryArrayTypeRectangularOffset
 )
+
+func (r *reader) ReadBinaryArrayTypeEnumeration() binaryArrayTypeEnumeration {
+	return binaryArrayTypeEnumeration(r.ReadByte())
+}
