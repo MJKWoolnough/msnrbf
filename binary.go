@@ -3,12 +3,23 @@ package msnrbf
 type binaryTypeEnumeration byte
 
 const (
-	binaryPrimitive binaryTypeEnumeration = iota
-	binaryString
-	binaryObject
-	binarySystemClass
-	binaryClass
-	binaryObjectArray
-	binaryStringArray
-	binaryPrimitiveArray
+	binaryTypePrimitive binaryTypeEnumeration = iota
+	binaryTypeString
+	binaryTypeObject
+	binaryTypeSystemClass
+	binaryTypeClass
+	binaryTypeObjectArray
+	binaryTypeStringArray
+	binaryTypePrimitiveArray
+)
+
+type binaryArrayTypeEnumeration byte
+
+const (
+	binaryArrayTypeSingle binaryArrayTypeEnumeration = iota
+	binaryArrayTypeJagged
+	binaryArrayTypeRectangular
+	binaryArrayTypeSingleOffset
+	binaryArrayTypeJaggedOffset
+	binaryArrayTypeRectangularOffset
 )
