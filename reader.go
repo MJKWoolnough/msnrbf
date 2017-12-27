@@ -71,7 +71,7 @@ func (r *reader) ReadVarInt() int32 {
 	return n
 }
 
-func (r *reader) RealBool() bool {
+func (r *reader) ReadBool() bool {
 	switch r.ReadByte() {
 	case 0:
 		return false
