@@ -24,7 +24,7 @@ func Open(r io.ReaderAt) (*File, error) {
 		return nil, ErrInvalidVersion
 	}
 	for {
-		typ := recordTypeEnumeration(rs.ReadByte())
+		typ := rs.ReadRecordTypeEnumeration()
 		if rs.Err != nil {
 			return nil, rs.Err
 		}
