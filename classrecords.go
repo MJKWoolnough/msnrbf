@@ -22,6 +22,18 @@ func (r *reader) ReadClassInfo() classInfo {
 	return c
 }
 
+type classTypeInfo struct {
+	TypeName  string
+	LibraryID int32
+}
+
+func (r *reader) ReadClassTypeInfo() classTypeInfo {
+	var c classTypeInfo
+	c.TypeName = r.ReadString()
+	c.LibraryID = r.ReadInt32()
+	return c
+}
+
 type memberTypeInfo []binaryTypeEnumeration
 
 func (r *reader) ReadMemberTypeInfo(l uint32) memberTypeInfo {
