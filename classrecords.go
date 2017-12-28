@@ -34,12 +34,29 @@ func (r *reader) ReadClassTypeInfo() classTypeInfo {
 	return c
 }
 
-type memberTypeInfo []binaryTypeEnumeration
+type memberTypeInfo struct {
+	BinaryTypeEnums []binaryTypeEnumeration
+	AdditionalInfos []interface{}
+}
 
 func (r *reader) ReadMemberTypeInfo(l uint32) memberTypeInfo {
-	m := make(memberTypeInfo, l)
-	for n := range m {
-		m[n] = r.ReadBinaryTypeEnumeration()
+	m := memberTypeInfo{
+		BinaryTypeEnums: make([]binaryTypeEnumeration, l),
+		AdditionalInfos: make([]interface{}, l),
+	}
+
+	for n := range m.BinaryTypeEnums {
+		m.BinaryTypeEnums[n] = r.ReadBinaryTypeEnumeration()
+		switch m.BinaryTypeEnums[n] {
+		case binaryTypePrimitive:
+			m.AdditionalInfos[n] = r.ReadPrimitiveTypeEnum()
+		case binaryTypeSystemClass:
+			m.AdditionalInfos[n] = r.ReadString()
+		case binaryTypeClass:
+			m.AdditionalInfos[n] = r.ReadClassTypeInfo()
+		case binaryTypePrimitiveArray:
+			m.AdditionalInfos[n] = r.ReadPrimitiveTypeEnum()
+		}
 	}
 	return m
 }
