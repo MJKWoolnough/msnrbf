@@ -47,6 +47,8 @@ func (r *reader) ReadMemberTypeInfo(l uint32) memberTypeInfo {
 
 	for n := range m.BinaryTypeEnums {
 		m.BinaryTypeEnums[n] = r.ReadBinaryTypeEnumeration()
+	}
+	for n := range m.BinaryTypeEnums {
 		switch m.BinaryTypeEnums[n] {
 		case binaryTypePrimitive:
 			m.AdditionalInfos[n] = r.ReadPrimitiveTypeEnum()
@@ -56,6 +58,7 @@ func (r *reader) ReadMemberTypeInfo(l uint32) memberTypeInfo {
 			m.AdditionalInfos[n] = r.ReadClassTypeInfo()
 		case binaryTypePrimitiveArray:
 			m.AdditionalInfos[n] = r.ReadPrimitiveTypeEnum()
+		default:
 		}
 	}
 	return m
