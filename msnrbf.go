@@ -17,7 +17,7 @@ func Open(ra io.ReaderAt) (*File, error) {
 		return nil, ErrInvalidHeaderByte
 	}
 	sh := r.ReadSerializedStreamHeader()
-	if sh.MajorVersion != 1 || sh.MajorVersion != 0 {
+	if sh.MajorVersion != 1 || sh.MinorVersion != 0 {
 		return nil, ErrInvalidVersion
 	}
 	for {
