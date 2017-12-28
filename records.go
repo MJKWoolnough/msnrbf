@@ -4,9 +4,9 @@ type recordTypeEnumeration byte
 
 const (
 	recordSerializedStreamHeader recordTypeEnumeration = iota
-	recordClassWithId
+	recordClassWithID
 	recordSystemClassWithMembers
-	recordClasswithMembers
+	recordClassWithMembers
 	recordSystemClassWithMembersAndTypes
 	recordClassWithMembersAndTypes
 	recordBinaryObjectString
@@ -235,7 +235,7 @@ type arraySinglePrimitive struct {
 	PrimitiveTypeEnum primitiveTypeEnum
 }
 
-func (r *reader) ReadArraysinglePrimitive() arraySinglePrimitive {
+func (r *reader) ReadArraySinglePrimitive() arraySinglePrimitive {
 	var a arraySinglePrimitive
 	a.ArrayInfo = r.ReadArrayInfo()
 	a.PrimitiveTypeEnum = r.ReadPrimitiveTypeEnum()
