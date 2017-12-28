@@ -11,50 +11,65 @@ type File struct {
 	RootID int32
 }
 
-func Open(r io.ReaderAt) (*File, error) {
-	rs := newReader(r)
-	if rs.ReadByte() != 0 {
+func Open(ra io.ReaderAt) (*File, error) {
+	r := newReader(ra)
+	if r.ReadByte() != 0 {
 		return nil, ErrInvalidHeaderByte
 	}
-	rootID := rs.ReadInt32()
-	rs.SkipInt32() // headerId
-	majorVer := rs.ReadInt32()
-	minorVer := rs.ReadInt32()
-	if majorVer != 1 || minorVer != 0 {
+	sh := r.ReadSerializedStreamHeader()
+	if sh.MajorVersion != 1 || sh.MajorVersion != 0 {
 		return nil, ErrInvalidVersion
 	}
 	for {
-		typ := rs.ReadRecordTypeEnumeration()
-		if rs.Err != nil {
-			return nil, rs.Err
+		typ := r.ReadRecordTypeEnumeration()
+		if r.Err != nil {
+			return nil, r.Err
 		}
 		switch typ {
-		//case recordClassWithId:
-		//case recordSystemClassWithMembers:
-		//case recordClasswithMembers:
-		//case recordSystemClassWithMembersAndTypes:
-		//case recordClassWithMembersAndTypes:
-		//case recordBinaryObjectString:
-		//case recordBinaryArray:
-		//case recordMemberPrimitiveTyped:
-		//case recordMemberReference:
-		//case recordObjectNull:
-		//case recordMessageEnd:
+		case recordClassWithID:
+			r.ReadClassWithID()
+		case recordSystemClassWithMembers:
+			r.ReadSystemClassWithMembers()
+		case recordClassWithMembers:
+			r.ReadClassWithMembers()
+		case recordSystemClassWithMembersAndTypes:
+			r.ReadSystemClassWithMembersAndTypes()
+		case recordClassWithMembersAndTypes:
+			r.ReadClassWithMembersAndTypes()
+		case recordBinaryObjectString:
+			r.ReadBinaryObjectString()
+		case recordBinaryArray:
+			r.ReadBinaryArray()
+		case recordMemberPrimitiveTyped:
+			r.ReadMemberPrimitiveTyped()
+		case recordMemberReference:
+			r.ReadMemberReference()
+		case recordObjectNull:
+			r.ReadObjectNull()
+		case recordMessageEnd:
+			r.ReadMessageEnd()
 		case recordBinaryLibrary:
-			rs.ReadBinaryLibrary()
-		//case recordObjectNullMultiple256:
-		//case recordObjectNullMultiple:
-		//case recordArraySinglePrimitive:
-		//case recordArraySingleObject:
-		//case recordArraySingleString:
-		//case recordMethodCall:
-		//case recordMethodReturn:
+			r.ReadBinaryLibrary()
+		case recordObjectNullMultiple256:
+			r.ReadObjectNullMultiple256()
+		case recordObjectNullMultiple:
+			r.ReadObjectNullMultiple()
+		case recordArraySinglePrimitive:
+			r.ReadArraySinglePrimitive()
+		case recordArraySingleObject:
+			r.ReadArraySingleObject()
+		case recordArraySingleString:
+			r.ReadArraySingleString()
+		case recordMethodCall:
+			r.ReadMethodCall()
+		case recordMethodReturn:
+			r.ReadMethodReturn()
 		default:
 			return nil, fmt.Errorf("unhandled type: %d", typ)
 		}
 	}
 	return &File{
-		RootID: rootID,
+		RootID: sh.RootID,
 	}, nil
 }
 
