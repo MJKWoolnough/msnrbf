@@ -33,6 +33,15 @@ func newReader(r io.ReaderAt) reader {
 	return nr
 }
 
+func (r *reader) PeekRTE() recordTypeEnumeration {
+	c := r.Count
+	p := r.pos
+	rte := r.ReadRecordTypeEnumeration()
+	r.Count = c
+	r.pos = p
+	return rte
+}
+
 const maxString = 16 * 1024 * 1024
 
 func (r *reader) ReadString() string {
