@@ -26,6 +26,10 @@ const (
 )
 
 func (r *reader) ReadRecordTypeEnumeration() recordTypeEnumeration {
+	if r.rtePeeker.peeked {
+		r.rtePeeker.peeked = false
+		return r.rtePeeker.peekedRTE
+	}
 	return recordTypeEnumeration(r.ReadByte())
 }
 

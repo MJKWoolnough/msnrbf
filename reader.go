@@ -9,37 +9,39 @@ import (
 	"github.com/MJKWoolnough/errors"
 )
 
+type rtePeeker struct {
+	io.Reader
+	peekedRTE recordTypeEnumeration
+	peeked    bool
+}
+
+func (r *rtePeeker) Read(p []byte) (int, error) {
+	r.peeked = false
+	return r.Reader.Read(p)
+}
+
 type reader struct {
-	*byteio.StickyLittleEndianReader
-	rs *readSeeker
+	byteio.StickyLittleEndianReader
+	rtePeeker rtePeeker
 }
 
-type readSeeker struct {
-	io.ReaderAt
-	pos int64
-}
-
-func (r *readSeeker) Read(p []byte) (int, error) {
-	n, err := r.ReadAt(p, r.pos)
-	r.pos += int64(n)
-	return n, err
-}
-
-func newReader(r io.ReaderAt) reader {
-	nr := reader{
-		rs: &readSeeker{ReaderAt: r},
+func newReader(r io.Reader) *reader {
+	rr := &reader{
+		rtePeeker: rtePeeker{
+			Reader: r,
+		},
 	}
-	nr.StickyLittleEndianReader = &byteio.StickyLittleEndianReader{Reader: nr.rs}
-	return nr
+	rr.StickyLittleEndianReader.Reader = &rr.rtePeeker
+	return rr
 }
 
 func (r *reader) PeekRTE() recordTypeEnumeration {
-	c := r.Count
-	p := r.pos
-	rte := r.ReadRecordTypeEnumeration()
-	r.Count = c
-	r.pos = p
-	return rte
+	if r.rtePeeker.peeked {
+		return r.rtePeeker.peekedRTE
+	}
+	r.rtePeeker.peekedRTE = r.ReadRecordTypeEnumeration()
+	r.rtePeeker.peeked = true
+	return r.rtePeeker.peekedRTE
 }
 
 const maxString = 16 * 1024 * 1024
@@ -95,38 +97,10 @@ func (r *reader) ReadByte() byte {
 	return r.ReadUint8()
 }
 
-func (r *reader) Goto(n uint32) {
-	r.rs.pos = int64(n)
-}
-
 func (r *reader) SetError(err error) {
 	if r.Err == nil {
 		r.Err = err
 	}
-}
-
-func (r *reader) Skip(n uint32) {
-	r.rs.pos += int64(n)
-}
-
-func (r *reader) SkipByte() {
-	r.Skip(1)
-}
-
-func (r *reader) SkipInt32() {
-	r.Skip(4)
-}
-
-func (r *reader) SkipUint32() {
-	r.Skip(4)
-}
-
-func (r *reader) SkipFloat32() {
-	r.Skip(4)
-}
-
-func (r *reader) SkipString() {
-	r.Skip(uint32(r.ReadVarInt()))
 }
 
 func (r *reader) ReadChar() rune {
