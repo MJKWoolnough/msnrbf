@@ -19,5 +19,5 @@ func NewClient(conn io.ReadWriteCloser) *rpc.Client {
 }
 
 func ServeConn(conn io.ReadWriteCloser) {
-	rpc.ServeConn(NewServerCodec(conn))
+	rpc.ServeCodec(NewServerCodec(conn))
 }
