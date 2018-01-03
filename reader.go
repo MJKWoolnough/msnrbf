@@ -141,6 +141,7 @@ func (r *reader) ReadDateTime() time.Time {
 		l = time.Local
 	case 3:
 		r.SetError(ErrInvalidDateTimeKind)
+		return time.Time{}
 	}
 	di := int64(d << 2)
 	di *= 25
