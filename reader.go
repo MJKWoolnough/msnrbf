@@ -130,25 +130,11 @@ func (r *reader) ReadTimeSpan() time.Duration {
 
 func (r *reader) ReadDateTime() time.Time {
 	// Ticks 62-bit signed integer, number of 100 nanoseconds since 12:00:00, January 1, 0001
-	// Kind 2-bit 0 - No Time zone, 1 - UTC, 2 - Local
+	// Kind 2-bit 0 - No Time zone, 1 - UTC, 2 - Local - !! UNUSED !! Assumed to be 0
 	d := r.ReadUint64()
-	var l *time.Location
-	switch d >> 62 {
-	case 0:
-	case 1:
-		l = time.UTC
-	case 2:
-		l = time.Local
-	case 3:
-		r.SetError(ErrInvalidDateTimeKind)
-		return time.Time{}
-	}
 	di := int64(d << 2)
 	di *= 25
 	t := time.Unix(di/1000000000, di%1000000000)
-	if l != nil {
-		t = t.In(l)
-	}
 	return t
 }
 
