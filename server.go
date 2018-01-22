@@ -3,10 +3,13 @@ package msnrbf
 import (
 	"io"
 	"net/rpc"
+	"sync"
 )
 
 type serverCodec struct {
+	mu   sync.Mutex
 	conn io.ReadWriteCloser
+	num  int64
 }
 
 func NewServerCodec(conn io.ReadWriteCloser) rpc.ServerCodec {
@@ -16,6 +19,9 @@ func NewServerCodec(conn io.ReadWriteCloser) rpc.ServerCodec {
 }
 
 func (s *serverCodec) ReadRequestHeader(r *rpc.Request) error {
+	s.mu.Lock()
+	r.Seq = s.num
+	s.num++
 	return nil
 }
 

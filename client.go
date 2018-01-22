@@ -3,9 +3,11 @@ package msnrbf
 import (
 	"io"
 	"net/rpc"
+	"sync"
 )
 
 type clientCodec struct {
+	mu   sync.Mutex
 	conn io.ReadWriteCloser
 }
 
@@ -16,6 +18,8 @@ func NewClientCodec(conn io.ReadWriteCloser) rpc.ClientCodec {
 }
 
 func (c *clientCodec) WriteRequest(r *rpc.Request, v interface{}) error {
+	c.mu.Lock()
+
 	return nil
 }
 
