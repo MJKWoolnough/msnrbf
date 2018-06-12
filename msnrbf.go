@@ -1,4 +1,4 @@
-package msnrbf
+package msnrbf // import "vimagination.zapto.org/msnrbf"
 
 import (
 	"io"
