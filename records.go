@@ -131,12 +131,12 @@ func (r *reader) ReadBinaryArray() binaryArray {
 	b.ArrayTypeEnum = r.ReadBinaryArrayTypeEnumeration()
 	b.Rank = r.ReadInt32()
 	b.Lengths = make([]int32, b.Rank)
+	b.LowerBounds = make([]int32, b.Rank)
 	for n := range b.Lengths {
 		b.Lengths[n] = r.ReadInt32() // >= 0
 	}
 	switch b.ArrayTypeEnum {
 	case binaryArrayTypeSingleOffset, binaryArrayTypeJaggedOffset, binaryArrayTypeRectangularOffset:
-		b.LowerBounds = make([]int32, b.Rank)
 		for n := range b.LowerBounds {
 			b.LowerBounds[n] = r.ReadInt32()
 		}
