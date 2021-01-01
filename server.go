@@ -22,6 +22,7 @@ func (s *serverCodec) ReadRequestHeader(r *rpc.Request) error {
 	s.mu.Lock()
 	r.Seq = s.num
 	s.num++
+	s.mu.Unlock()
 	return nil
 }
 
