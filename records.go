@@ -148,7 +148,7 @@ func (r *reader) ReadBinaryArray() binaryArray {
 	case binaryTypeSystemClass:
 		b.AdditionTypeInfo = r.ReadString()
 	case binaryTypeClass:
-		b.AdditionTypeInfo = r.ReadClassInfo()
+		b.AdditionTypeInfo = r.ReadClassTypeInfo()
 	}
 	return b
 }
