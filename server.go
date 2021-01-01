@@ -9,7 +9,7 @@ import (
 type serverCodec struct {
 	mu   sync.Mutex
 	conn io.ReadWriteCloser
-	num  int64
+	num  uint64
 }
 
 func NewServerCodec(conn io.ReadWriteCloser) rpc.ServerCodec {
