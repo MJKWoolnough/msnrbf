@@ -70,7 +70,7 @@ func (r *reader) ReadString() string {
 func (r *reader) ReadVarInt() int32 {
 	var n int32
 	for i := 0; i < 5; i++ {
-		b := r.ReadByte()
+		b := r.ReadUint8()
 		n |= int32(b&127) << uint(7*i)
 		if b&128 == 0 {
 			break
@@ -83,7 +83,7 @@ func (r *reader) ReadVarInt() int32 {
 }
 
 func (r *reader) ReadBool() bool {
-	switch r.ReadByte() {
+	switch r.ReadUint8() {
 	case 0:
 		return false
 	case 1:
@@ -91,10 +91,6 @@ func (r *reader) ReadBool() bool {
 	}
 	r.SetError(ErrInvalidBool)
 	return false
-}
-
-func (r *reader) ReadByte() byte {
-	return r.ReadUint8()
 }
 
 func (r *reader) SetError(err error) {
@@ -105,13 +101,13 @@ func (r *reader) SetError(err error) {
 
 func (r *reader) ReadChar() rune {
 	var char [4]byte
-	char[0] = r.ReadByte()
+	char[0] = r.ReadUint8()
 	var l int
 	if char[0]&0x80 == 0 {
 		l = 1
 	} else if char[0]&0xc0 == 0x80 {
 		// read 1 byte
-		char[1] = r.ReadByte()
+		char[1] = r.ReadUint8()
 		l = 2
 	} else if char[0]&0xe0 == 0xc0 {
 		r.Read(char[1:3])

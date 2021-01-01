@@ -30,7 +30,7 @@ func (r *reader) ReadRecordTypeEnumeration() recordTypeEnumeration {
 		r.rtePeeker.peeked = false
 		return r.rtePeeker.peekedRTE
 	}
-	return recordTypeEnumeration(r.ReadByte())
+	return recordTypeEnumeration(r.ReadUint8())
 }
 
 type serializedStreamHeader struct {
@@ -160,7 +160,7 @@ func (r *reader) ReadMemberPrimitiveTyped() memberPrimitiveTyped {
 	case primitiveTypeBoolean:
 		return r.ReadBool()
 	case primitiveTypeByte:
-		return r.ReadByte()
+		return r.ReadUint8()
 	case primitiveTypeChar:
 		return r.ReadChar()
 	case primitiveTypeDecimal:
@@ -225,7 +225,7 @@ func (r *reader) ReadBinaryLibrary() binaryLibrary {
 type objectNullMultiple256 byte
 
 func (r *reader) ReadObjectNullMultiple256() objectNullMultiple256 {
-	return objectNullMultiple256(r.ReadByte())
+	return objectNullMultiple256(r.ReadUint8())
 }
 
 type objectNullMultiple int32

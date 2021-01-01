@@ -24,7 +24,7 @@ const (
 )
 
 func (r *reader) ReadPrimitiveTypeEnum() primitiveTypeEnum {
-	return primitiveTypeEnum(r.ReadByte())
+	return primitiveTypeEnum(r.ReadUint8())
 }
 
 func (p primitiveTypeEnum) String() string {

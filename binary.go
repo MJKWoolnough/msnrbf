@@ -14,7 +14,7 @@ const (
 )
 
 func (r *reader) ReadBinaryTypeEnumeration() binaryTypeEnumeration {
-	return binaryTypeEnumeration(r.ReadByte())
+	return binaryTypeEnumeration(r.ReadUint8())
 }
 
 func (b binaryTypeEnumeration) String() string {
@@ -52,7 +52,7 @@ const (
 )
 
 func (r *reader) ReadBinaryArrayTypeEnumeration() binaryArrayTypeEnumeration {
-	return binaryArrayTypeEnumeration(r.ReadByte())
+	return binaryArrayTypeEnumeration(r.ReadUint8())
 }
 
 func (b binaryArrayTypeEnumeration) String() string {
