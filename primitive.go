@@ -3,7 +3,7 @@ package msnrbf
 type primitiveTypeEnum byte
 
 const (
-	primitiveTypeBoolean primitiveTypeEnum = iota
+	primitiveTypeBoolean primitiveTypeEnum = iota + 1
 	primitiveTypeByte
 	primitiveTypeChar
 	_
