@@ -138,12 +138,9 @@ func (c *call) readArray(te recordTypeEnumeration) {
 		_ = values
 	case recordBinaryArray:
 		ba := c.ReadBinaryArray()
-		length := 0
-		for _, l := range ba.Lengths {
-			length += int(l)
-		}
-		for _, l := range ba.LowerBounds {
-			length -= int(l)
+		length := 1
+		for i := int32(0); i < ba.Rank; i++ {
+			length *= ba.Lengths - ba.LowerBounds
 		}
 		var values interface{}
 		switch ba.TypeEnum {
