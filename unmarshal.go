@@ -144,6 +144,11 @@ func (c *call) readArray(te recordTypeEnumeration) {
 		case binaryTypePrimitive, binaryTypePrimitiveArray:
 			c.objects[ba.ObjectID] = c.readPrimitiveArray(ba.AdditionTypeInfo.(primitiveTypeEnum))
 		default:
+			ai := primitiveTypeEnum(255)
+			switch ba.TypeEnum {
+			case binaryTypePrimitive:
+				ai = ba.AdditionTypeInfo.(primitiveTypeEnum)
+			}
 			c.objects[ba.ObjectID] = c.readMemberReferences(int(length), func(_ int) (binaryTypeEnumeration, primitiveTypeEnum) {
 				return ba.TypeEnum, ai
 			})
