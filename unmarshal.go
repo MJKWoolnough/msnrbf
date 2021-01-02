@@ -108,14 +108,12 @@ func (c *call) readArray(te recordTypeEnumeration) {
 	switch te {
 	case recordArraySingleObject:
 		so := c.ReadArraySingleObject()
-		values := c.readMemberReferences(int(pa.ArrayInfo.Length), func(_ int) (binaryTypeEnumeration, primitiveTypeEnum) {
+		c.objects[so.ArrayInfo.ObjectID] = c.readMemberReferences(int(so.ArrayInfo.Length), func(_ int) (binaryTypeEnumeration, primitiveTypeEnum) {
 			return 255, 255
 		})
-		_ = values
 	case recordArraySinglePrimitive:
 		pa := c.ReadArraySinglePrimitive()
-		values := c.readPrimitiveArray(pa.PrimitiveTypeEnum)
-		_ = values
+		c.objects[pa.ArrayInfo.ObjectID] = c.readPrimitiveArray(pa.PrimitiveTypeEnum)
 	case recordArraySingleString:
 		ass := c.ReadArraySingleString()
 		values := make([]interface{}, ass.ArrayInfo.Length)
@@ -135,22 +133,20 @@ func (c *call) readArray(te recordTypeEnumeration) {
 				c.SetError(ErrInvalidRecord)
 			}
 		}
-		_ = values
+		c.objects[ass.ArrayInfo.ObjectID] = values
 	case recordBinaryArray:
 		ba := c.ReadBinaryArray()
 		length := 1
 		for i := int32(0); i < ba.Rank; i++ {
 			length *= ba.Lengths - ba.LowerBounds
 		}
-		var values interface{}
 		switch ba.TypeEnum {
 		case binaryTypePrimitive, binaryTypePrimitiveArray:
-			values = c.readPrimitiveArray(ba.AdditionTypeInfo.(primitiveTypeEnum))
+			c.objects[ba.ObjectID] = c.readPrimitiveArray(ba.AdditionTypeInfo.(primitiveTypeEnum))
 		default:
-			values = c.readMemberReferences(length, func(_ int) (binaryTypeEnumeration, primitiveTypeEnum) {
+			c.objects[ba.ObjectID] = c.readMemberReferences(length, func(_ int) (binaryTypeEnumeration, primitiveTypeEnum) {
 				return ba.TypeEnum, ai
 			})
-			_ = values
 		}
 	}
 }
