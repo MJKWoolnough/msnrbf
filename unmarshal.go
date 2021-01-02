@@ -3,6 +3,7 @@ package msnrbf
 import (
 	"errors"
 	"io"
+	"time"
 )
 
 type call struct {
@@ -113,9 +114,7 @@ func (c *call) readArray(te recordTypeEnumeration) {
 		_ = values
 	case recordArraySinglePrimitive:
 		pa := c.ReadArraySinglePrimitive()
-		values := c.readMemberReferences(int(pa.ArrayInfo.Length), func(_ int) (binaryTypeEnumeration, primitiveTypeEnum) {
-			return binaryTypePrimitive, pa.PrimitiveTypeEnum
-		})
+		values := c.readPrimitiveArray(pa.PrimitiveTypeEnum)
 		_ = values
 	case recordArraySingleString:
 		ass := c.ReadArraySingleString()
@@ -146,16 +145,121 @@ func (c *call) readArray(te recordTypeEnumeration) {
 		for _, l := range ba.LowerBounds {
 			length -= int(l)
 		}
-		values := c.readMemberReferences(length, func(_ int) (binaryTypeEnumeration, primitiveTypeEnum) {
-			ai := primitiveTypeEnum(255)
-			switch ba.TypeEnum {
-			case binaryTypePrimitive, binaryTypePrimitiveArray:
-				ai = ba.AdditionTypeInfo.(primitiveTypeEnum)
-			}
-			return ba.TypeEnum, ai
-		})
-		_ = values
+		var values interface{}
+		switch ba.TypeEnum {
+		case binaryTypePrimitive, binaryTypePrimitiveArray:
+			values = c.readPrimitiveArray(ba.AdditionTypeInfo.(primitiveTypeEnum))
+		default:
+			values = c.readMemberReferences(length, func(_ int) (binaryTypeEnumeration, primitiveTypeEnum) {
+				return ba.TypeEnum, ai
+			})
+			_ = values
+		}
 	}
+}
+
+func (c *call) readPrimitiveArray(pte primitiveTypeEnum) interface{} {
+	switch pte {
+	case primitiveTypeBoolean:
+		data := make([]bool, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadBool()
+		}
+		return data
+	case primitiveTypeByte:
+		data := make([]uint8, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadUint8()
+		}
+		return data
+	case primitiveTypeChar:
+		data := make([]rune, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadChar()
+		}
+		return data
+	case primitiveTypeDecimal:
+		data := make([]string, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadDecimal()
+		}
+		return data
+	case primitiveTypeDouble:
+		data := make([]float64, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadFloat64()
+		}
+		return data
+	case primitiveTypeInt16:
+		data := make([]int16, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadInt16()
+		}
+		return data
+	case primitiveTypeInt32:
+		data := make([]int32, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadInt32()
+		}
+		return data
+	case primitiveTypeInt64:
+		data := make([]int64, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadInt64()
+		}
+		return data
+	case primitiveTypeSByte:
+		data := make([]int8, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadInt8()
+		}
+		return data
+	case primitiveTypeSingle:
+		data := make([]float32, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadFloat32()
+		}
+		return data
+	case primitiveTypeTimeSpan:
+		data := make([]time.Duration, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadTimeSpan()
+		}
+		return data
+	case primitiveTypeDateTime:
+		data := make([]time.Time, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadDateTime()
+		}
+		return data
+	case primitiveTypeUInt16:
+		data := make([]uint16, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadUint16()
+		}
+		return data
+	case primitiveTypeUInt32:
+		data := make([]uint32, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadUint32()
+		}
+		return data
+	case primitiveTypeUInt64:
+		data := make([]uint64, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadUint64()
+		}
+		return data
+	case primitiveTypeNull:
+		return make([]struct{}, pa.ArrayInfo.Length)
+	case primitiveTypeString:
+		data := make([]string, pa.ArrayInfo.Length)
+		for n := range data {
+			data[n] = c.ReadString()
+		}
+		return data
+	}
+	return nil
 }
 
 func (c *call) readMemberReferences(length int, typeInfo func(n int) (binaryTypeEnumeration, primitiveTypeEnum)) []interface{} {
