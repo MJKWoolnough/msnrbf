@@ -166,9 +166,7 @@ func (c *call) readPrimitiveArray(length int32, pte primitiveTypeEnum) interface
 		return data
 	case primitiveTypeByte:
 		data := make([]uint8, length)
-		for n := range data {
-			data[n] = c.ReadUint8()
-		}
+		c.Read(data)
 		return data
 	case primitiveTypeChar:
 		data := make([]rune, length)
